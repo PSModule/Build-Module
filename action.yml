@@ -17,10 +17,6 @@ inputs:
     description: Path to the folder where the built modules are outputted.
     required: false
     default: outputs/modules
-  ModuleArtifactName:
-    description: Name of the module artifact to upload.
-    required: false
-    default: module
   Debug:
     description: Enable debug output.
     required: false
@@ -54,11 +50,3 @@ runs:
         Script: |
           # Build-PSModule
           ${{ github.action_path }}\scripts\main.ps1
-
-    - name: Upload module artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ inputs.ModuleArtifactName }}
-        path: ${{ inputs.ModulesOutputPath }}
-        if-no-files-found: error
-        retention-days: 1

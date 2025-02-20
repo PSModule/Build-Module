@@ -52,3 +52,5 @@ $params = @{
 }
 
 Build-PSModule @params
+
+exit 0
