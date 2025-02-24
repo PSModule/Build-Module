@@ -16,20 +16,21 @@ LogGroup "Loading helper scripts from [$path]" {
 }
 
 LogGroup 'Loading inputs' {
-    $moduleName = ($env:GITHUB_ACTION_INPUT_Name | IsNullOrEmpty) ? $env:GITHUB_REPOSITORY_NAME : $env:GITHUB_ACTION_INPUT_Name
+    $moduleName = if ([string]::IsNullOrEmpty($env:PSMODULE_BUILD_PSMODULE_INPUT_Name)) {
+        $env:GITHUB_REPOSITORY_NAME
+    } else {
+        $env:PSMODULE_BUILD_PSMODULE_INPUT_Name
+    }
     Write-Host "Module name:         [$moduleName]"
+    Set-GitHubOutput -Name ModuleName -Value $moduleName
 
-    $moduleSourceFolderPath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath $env:GITHUB_ACTION_INPUT_Path/$moduleName
-    if (-not (Test-Path -Path $moduleSourceFolderPath)) {
-        $moduleSourceFolderPath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath $env:GITHUB_ACTION_INPUT_Path
-    }
-    Write-Host "Source module path:  [$moduleSourceFolderPath]"
-    if (-not (Test-Path -Path $moduleSourceFolderPath)) {
-        throw "Module path [$moduleSourceFolderPath] does not exist."
+    $sourceFolderPath = Join-Path -Path $env:PSMODULE_BUILD_PSMODULE_INPUT_Path -ChildPath 'src'
+    if (-not (Test-Path -Path $sourceFolderPath)) {
+        throw "Source folder path [$sourceFolderPath] does not exist."
     }
 
-    $modulesOutputFolderPath = Join-Path $env:GITHUB_WORKSPACE $env:GITHUB_ACTION_INPUT_ModulesOutputPath
-    Write-Host "Modules output path: [$modulesOutputFolderPath]"
+    $moduleOutputFolderPath = Join-Path $env:PSMODULE_BUILD_PSMODULE_INPUT_Path -ChildPath 'outputs/module'
+    Write-Host "Modules output path: [$moduleOutputFolderPath]"
 }
 
 LogGroup 'Build local scripts' {
@@ -46,9 +47,10 @@ LogGroup 'Build local scripts' {
 }
 
 $params = @{
-    ModuleName              = $moduleName
-    ModuleSourceFolderPath  = $moduleSourceFolderPath
-    ModulesOutputFolderPath = $modulesOutputFolderPath
+    ModuleName             = $moduleName
+    ModuleSourceFolderPath = $sourceFolderPath
+    ModuleOutputFolderPath = $moduleOutputFolderPath
 }
-
 Build-PSModule @params
+
+exit 0

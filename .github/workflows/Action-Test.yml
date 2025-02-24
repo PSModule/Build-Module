@@ -32,8 +32,8 @@ jobs:
         uses: ./
         with:
           Name: PSModuleTest
-          Path: tests/src
-          ModulesOutputPath: tests/outputs/modules
+          Path: tests/srcTestRepo
+          ArtifactName: PSModuleTestDefault
 
   ActionTestMinimal:
     name: Action-Test - [Minimal]
@@ -49,9 +49,8 @@ jobs:
         uses: ./
         with:
           Name: PSModuleTest
-          Path: tests/srcMinimal
-          ModulesOutputPath: tests/outputs/modules
-          ModuleArtifactName: moduleMinimal
+          Path: tests/srcMinimalTestRepo
+          ArtifactName: PSModuleTestMinimal
 
   ActionTestWithManifest:
     name: Action-Test - [DefaultWithManifest]
@@ -67,6 +66,5 @@ jobs:
         uses: ./
         with:
           Name: PSModuleTest
-          Path: tests/srcWithManifest
-          ModulesOutputPath: tests/outputs/modules
-          ModuleArtifactName: moduleWithManifest
+          Path: tests/srcWithManifestTestRepo
+          ArtifactName: PSModuleTestWithManifest

@@ -12,15 +12,11 @@ inputs:
   Path:
     description: Path to the folder where the modules are located.
     required: false
-    default: src
-  ModulesOutputPath:
-    description: Path to the folder where the built modules are outputted.
+    default: ${{ github.workspace }}
+  ArtifactName:
+    description: Name of the artifact to upload.
     required: false
-    default: outputs/modules
-  ModuleArtifactName:
-    description: Name of the module artifact to upload.
-    required: false
-    default: module
+    default: 'module'
   Debug:
     description: Enable debug output.
     required: false
@@ -42,10 +38,10 @@ runs:
   steps:
     - name: Run Build-PSModule
       uses: PSModule/GitHub-Script@v1
+      id: build
       env:
-        GITHUB_ACTION_INPUT_Name: ${{ inputs.Name }}
-        GITHUB_ACTION_INPUT_Path: ${{ inputs.Path }}
-        GITHUB_ACTION_INPUT_ModulesOutputPath: ${{ inputs.ModulesOutputPath }}
+        PSMODULE_BUILD_PSMODULE_INPUT_Name: ${{ inputs.Name }}
+        PSMODULE_BUILD_PSMODULE_INPUT_Path: ${{ inputs.Path }}
       with:
         Debug: ${{ inputs.Debug }}
         Prerelease: ${{ inputs.Prerelease }}
@@ -53,12 +49,12 @@ runs:
         Version: ${{ inputs.Version }}
         Script: |
           # Build-PSModule
-          ${{ github.action_path }}\scripts\main.ps1
+          ${{ github.action_path }}/scripts/main.ps1
 
     - name: Upload module artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.ModuleArtifactName }}
-        path: ${{ inputs.ModulesOutputPath }}
+        name: ${{ inputs.ArtifactName }}
+        path: ${{ inputs.Path }}/outputs/module
         if-no-files-found: error
         retention-days: 1
